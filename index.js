@@ -10,6 +10,7 @@ app.use(cors());
 require('dotenv').config(); // Load environment variables from .env file
 const authRoutes = require('./routes/auth');
 
+
 const connectDB = require('./config/database');
 connectDB();
 
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 app.use('/auth', authRoutes);
+app.use('/employees', require('./routes/employee')); // New employee routes
 
 
 app.listen(PORT, () => {
