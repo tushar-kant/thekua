@@ -7,7 +7,7 @@ app.use(express.json());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); 
 const authRoutes = require('./routes/auth');
 
 
@@ -20,7 +20,7 @@ app.get('/', (req, res) => {
     res.send('Hello, World!');
 });
 app.use('/auth', authRoutes);
-app.use('/employees', require('./routes/employee')); // New employee routes
+app.use('/employees', require('./routes/employee'));
 
 
 app.listen(PORT, () => {

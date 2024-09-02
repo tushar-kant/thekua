@@ -31,6 +31,49 @@ const createEmployee = async (req, res) => {
     }
 };
 
+const getEmployees = async (req, res) => {
+    const { page = 1, limit = 10, employeeName, employeeId, designation } = req.query;
+
+    const pageNumber = parseInt(page, 10);
+    const limitNumber = parseInt(limit, 10);
+
+    const filter = {};
+
+    if (employeeName) {
+        filter.employeeName = new RegExp(employeeName, 'i'); // Case-insensitive partial match
+    }
+    if (employeeId) {
+        filter.employeeId = employeeId; // Exact match
+    }
+    if (designation) {
+        filter.designation = designation; // Exact match
+    }
+
+    try {      
+          const totalEmployees = await Employee.countDocuments(filter);
+
+        const totalPages = Math.ceil(totalEmployees / limitNumber);
+
+        const employees = await Employee.find(filter)
+            .skip((pageNumber - 1) * limitNumber)
+            .limit(limitNumber);
+
+        res.status(200).json({
+            currentPage: pageNumber,
+            totalPages,
+            totalEmployees,
+            employees,
+        });
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
+
 module.exports = {
     createEmployee,
+    getEmployees,
+
 };

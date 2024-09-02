@@ -1,7 +1,8 @@
 const express = require('express');
 const { check } = require('express-validator');
-const { createEmployee } = require('../controllers/employeeController');
+const { createEmployee ,getEmployees} = require('../controllers/employeeController');
 const router = express.Router();
+router.get('/', getEmployees);
 
 router.post(
     '/create',
