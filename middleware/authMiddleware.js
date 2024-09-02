@@ -1,19 +1,25 @@
-// middleware/authMiddleware.js
-
+const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-const authenticateUser = async (req, res, next) => {
-    const { email } = req.body; // You may use headers or tokens for more secure auth in production
+const authenticate = async (req, res, next) => {
+    const token = req.headers['authorization']?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: 'No token provided' });
+    }
+
     try {
-        const user = await User.findOne({ email });
+        const decoded = jwt.verify(token, 'your_jwt_secret');
+        const user = await User.findById(decoded.id);
+
         if (!user || !user.authenticated) {
             return res.status(401).json({ message: 'Unauthorized access' });
         }
+
+        req.user = user;
         next();
     } catch (error) {
-        console.error(error.message);
-        res.status(500).json({ message: 'Server error' });
+        return res.status(401).json({ message: 'Invalid token' });
     }
 };
 
-module.exports = authenticateUser;
+module.exports = authenticate;

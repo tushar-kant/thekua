@@ -1,10 +1,13 @@
 const crypto = require('crypto');
 const User = require('../models/User');
+const jwt = require('jsonwebtoken');
 
 const generateOtp = () => {
     return crypto.randomInt(100000, 999999).toString();
 };
-
+const generateToken = (userId) => {
+    return jwt.sign({ id: userId }, 'your_jwt_secret', { expiresIn: '1h' });
+};
 const requestOtp = async (req, res) => {
     const { email } = req.body;
     try {
@@ -51,7 +54,9 @@ const verifyOtp = async (req, res) => {
         user.authenticated = true;
         await user.save();
 
-        return res.status(200).json({ message: 'OTP verified successfully' });
+        const token = generateToken(user._id);
+
+        return res.status(200).json({ message: 'OTP verified successfully', token });
     } catch (error) {
         return res.status(500).json({ message: 'Server error' });
     }

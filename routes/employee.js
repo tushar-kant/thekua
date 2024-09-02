@@ -1,15 +1,14 @@
 const express = require('express');
 const { check } = require('express-validator');
 const { createEmployee, getEmployees } = require('../controllers/employeeController');
-const authenticateUser = require('../middleware/authMiddleware');
-
+const authenticate = require('../middleware/authMiddleware');
 const router = express.Router();
 
-router.get('/', authenticateUser, getEmployees);
+router.use(authenticate); 
+router.get('/', getEmployees);
 
 router.post(
     '/create',
-    authenticateUser, // This middleware ensures only authenticated users can access this endpoint
     [
         check('employeeName')
             .isLength({ min: 2, max: 20 })
